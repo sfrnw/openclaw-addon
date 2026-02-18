@@ -1,8 +1,8 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM:-node:20-alpine}
 
-# Install system dependencies needed for OpenClaw
-RUN apk add --no-cache \
+# Install system dependencies including Node.js
+RUN apk update && apk add --no-cache \
     git \
     curl \
     gnupg \
@@ -11,7 +11,9 @@ RUN apk add --no-cache \
     python3 \
     make \
     g++ \
-    linux-headers
+    linux-headers \
+    nodejs \
+    npm
 
 # Install OpenClaw globally
 RUN npm install -g openclaw
