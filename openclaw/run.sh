@@ -6,13 +6,14 @@ echo "🦞 Starting OpenClaw..."
 # Create config directory
 mkdir -p /root/.openclaw
 
-# Generate openclaw.json
+# Generate openclaw.json with correct format
 cat > /root/.openclaw/openclaw.json << EOF
 {
   "gateway": {
-    "host": "0.0.0.0",
     "port": 18789,
-    "token": "${GATEWAY_TOKEN}"
+    "auth": {
+      "token": "${GATEWAY_TOKEN}"
+    }
   },
   "channels": {
     "telegram": {
@@ -28,6 +29,7 @@ cat > /root/.openclaw/openclaw.json << EOF
 EOF
 
 echo "✅ Configuration written to /root/.openclaw/openclaw.json"
+cat /root/.openclaw/openclaw.json
 
 # Setup email if credentials provided
 if [ -n "$GMAIL_EMAIL" ] && [ -n "$GMAIL_APP_PASSWORD" ]; then
@@ -73,8 +75,12 @@ GPGEOF
     echo "✅ Email configured"
 fi
 
+echo ""
 echo "🌐 Gateway UI: http://$(hostname -i):18789"
 echo ""
 
-# Start OpenClaw Gateway (reads config from /root/.openclaw/openclaw.json)
+# Run doctor to fix any legacy config issues
+openclaw doctor --fix 2>/dev/null || true
+
+# Start OpenClaw Gateway
 exec openclaw gateway start

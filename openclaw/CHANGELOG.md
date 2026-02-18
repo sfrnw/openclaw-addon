@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2] - 2026-02-18
+
+### Fixed
+- Updated config format to match OpenClaw v1.x schema
+- Changed `gateway.token` → `gateway.auth.token`
+- Removed deprecated `gateway.host` field
+- Added `openclaw doctor --fix` to auto-migrate legacy configs
+
 ## [1.0.1] - 2026-02-18
 
 ### Fixed
