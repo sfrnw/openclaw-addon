@@ -3,11 +3,11 @@ set -e
 
 echo "🦞 Starting OpenClaw..."
 
-# Create workspace directory
-mkdir -p /workspace
+# Create config directory
+mkdir -p /root/.openclaw
 
-# Generate openclaw.json from options
-cat > /workspace/openclaw.json << EOF
+# Generate openclaw.json
+cat > /root/.openclaw/openclaw.json << EOF
 {
   "gateway": {
     "host": "0.0.0.0",
@@ -27,11 +27,12 @@ cat > /workspace/openclaw.json << EOF
 }
 EOF
 
+echo "✅ Configuration written to /root/.openclaw/openclaw.json"
+
 # Setup email if credentials provided
 if [ -n "$GMAIL_EMAIL" ] && [ -n "$GMAIL_APP_PASSWORD" ]; then
     echo "📧 Setting up email..."
     
-    # Create himalaya config
     mkdir -p /root/.config/himalaya
     cat > /root/.config/himalaya/config.toml << EOF
 [core]
@@ -68,36 +69,12 @@ Expire-Date: 0
 %commit
 GPGEOF
 
-    # Store password in pass
     echo "${GMAIL_APP_PASSWORD}" | pass insert -m "himalaya/gmail" 2>/dev/null || true
+    echo "✅ Email configured"
 fi
 
-# Setup Home Assistant integration if provided
-if [ -n "$HOMEASSISTANT_URL" ] && [ -n "$HOMEASSISTANT_TOKEN" ]; then
-    echo "🏠 Setting up Home Assistant integration..."
-    
-    # Add HA config to openclaw.json
-    cat > /workspace/ha-integration.json << EOF
-{
-  "integrations": {
-    "homeassistant": {
-      "url": "${HOMEASSISTANT_URL}",
-      "token": "${HOMEASSISTANT_TOKEN}"
-    }
-  }
-}
-EOF
-fi
-
-# Setup Notion if provided
-if [ -n "$NOTION_API_KEY" ]; then
-    echo "📝 Setting up Notion integration..."
-    export NOTION_API_KEY="${NOTION_API_KEY}"
-fi
-
-echo "✅ Configuration complete"
 echo "🌐 Gateway UI: http://$(hostname -i):18789"
 echo ""
 
-# Start OpenClaw Gateway
-exec openclaw gateway start --config /workspace/openclaw.json
+# Start OpenClaw Gateway (reads config from /root/.openclaw/openclaw.json)
+exec openclaw gateway start
