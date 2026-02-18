@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.4] - 2026-02-18
+
+### Fixed
+- Fixed Telegram config format for OpenClaw v1.x
+- Changed `channels.telegram.allowedUsers` → `channels.telegram.allowlist`
+- Added `channels.telegram.enabled: true` and `dmPolicy: allowlist`
+- Added `gateway.bind: loopback` and `gateway.auth.mode: token`
+- Removed `defaults` section (not valid in v1.x schema)
+
 ## [1.0.3] - 2026-02-18
 
 ### Fixed

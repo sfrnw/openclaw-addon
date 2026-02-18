@@ -7,25 +7,25 @@ echo "🦞 Starting OpenClaw..."
 mkdir -p /root/.openclaw
 chmod 700 /root/.openclaw
 
-# Generate openclaw.json with correct format
+# Generate openclaw.json with correct v1.x format
 cat > /root/.openclaw/openclaw.json << EOF
 {
   "gateway": {
     "port": 18789,
     "mode": "local",
+    "bind": "loopback",
     "auth": {
+      "mode": "token",
       "token": "${GATEWAY_TOKEN}"
     }
   },
   "channels": {
     "telegram": {
+      "enabled": true,
       "botToken": "${TELEGRAM_TOKEN}",
-      "allowedUsers": [${TELEGRAM_ALLOWED_USERS}]
+      "dmPolicy": "allowlist",
+      "allowlist": [${TELEGRAM_ALLOWED_USERS}]
     }
-  },
-  "defaults": {
-    "thinking": "off",
-    "timezone": "${TIMEZONE:-Europe/Lisbon}"
   }
 }
 EOF
@@ -33,6 +33,7 @@ EOF
 chmod 600 /root/.openclaw/openclaw.json
 
 echo "✅ Configuration written to /root/.openclaw/openclaw.json"
+cat /root/.openclaw/openclaw.json
 
 # Create required directories
 mkdir -p /root/.openclaw/agents/main/sessions
