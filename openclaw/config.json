@@ -1,6 +1,6 @@
 {
   "name": "OpenClaw AI Assistant",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "slug": "openclaw",
   "description": "AI personal assistant with Telegram, Email, and Home Assistant integration",
   "arch": ["aarch64", "armv7"],
@@ -19,20 +19,13 @@
   "devices": [],
   "options": {
     "telegram_token": "",
-    "telegram_allowed_users": "",
-    "gateway_token": "",
-    "timezone": "Europe/Lisbon"
+    "gateway_token": ""
   },
   "schema": {
     "telegram_token": "str",
-    "telegram_allowed_users": "str",
     "gateway_token": "str",
-    "timezone": "str?",
     "gmail_email": "str?",
-    "gmail_app_password": "str?",
-    "notion_api_key": "str?",
-    "homeassistant_url": "str?",
-    "homeassistant_token": "str?"
+    "gmail_app_password": "str?"
   },
   "init": false,
   "map": ["ssl:ro"],

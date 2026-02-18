@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.5] - 2026-02-18
+
+### Fixed
+- Simplified Telegram config to minimal valid schema for v1.x
+- Removed `allowlist` / `allowedUsers` (not valid keys in v1.x)
+- Set `dmPolicy: pairing` (default, no allowlist needed)
+- Removed unused config options: `timezone`, `telegram_allowed_users`, `notion_api_key`, `homeassistant_*`
+- Added default value for `GATEWAY_TOKEN` if not provided
+
 ## [1.0.4] - 2026-02-18
 
 ### Fixed

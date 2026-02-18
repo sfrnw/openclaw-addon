@@ -7,7 +7,7 @@ echo "🦞 Starting OpenClaw..."
 mkdir -p /root/.openclaw
 chmod 700 /root/.openclaw
 
-# Generate openclaw.json with correct v1.x format
+# Generate minimal openclaw.json with correct v1.x format
 cat > /root/.openclaw/openclaw.json << EOF
 {
   "gateway": {
@@ -16,15 +16,14 @@ cat > /root/.openclaw/openclaw.json << EOF
     "bind": "loopback",
     "auth": {
       "mode": "token",
-      "token": "${GATEWAY_TOKEN}"
+      "token": "${GATEWAY_TOKEN:-openclaw-pi-token}"
     }
   },
   "channels": {
     "telegram": {
       "enabled": true,
       "botToken": "${TELEGRAM_TOKEN}",
-      "dmPolicy": "allowlist",
-      "allowlist": [${TELEGRAM_ALLOWED_USERS}]
+      "dmPolicy": "pairing"
     }
   }
 }
@@ -70,7 +69,6 @@ imap = { type = "password", username = "${GMAIL_EMAIL}", password = "${GMAIL_APP
 smtp = { type = "password", username = "${GMAIL_EMAIL}", password = "${GMAIL_APP_PASSWORD}" }
 EOF
 
-    # Setup GPG for pass
     gpg --batch --gen-key << GPGEOF || true
 Key-Type: RSA
 Key-Length: 2048
