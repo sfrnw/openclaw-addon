@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.3] - 2026-02-18
+
+### Fixed
+- Added `gateway.mode: local` to config (required for gateway start)
+- Create required directories: `sessions`, `credentials`
+- Set secure permissions: `~/.openclaw` (700), `openclaw.json` (600)
+- Removed `openclaw doctor --fix` (not needed with correct config)
+
 ## [1.0.2] - 2026-02-18
 
 ### Fixed

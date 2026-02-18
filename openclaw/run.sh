@@ -3,14 +3,16 @@ set -e
 
 echo "🦞 Starting OpenClaw..."
 
-# Create config directory
+# Create config directory with secure permissions
 mkdir -p /root/.openclaw
+chmod 700 /root/.openclaw
 
 # Generate openclaw.json with correct format
 cat > /root/.openclaw/openclaw.json << EOF
 {
   "gateway": {
     "port": 18789,
+    "mode": "local",
     "auth": {
       "token": "${GATEWAY_TOKEN}"
     }
@@ -28,8 +30,15 @@ cat > /root/.openclaw/openclaw.json << EOF
 }
 EOF
 
+chmod 600 /root/.openclaw/openclaw.json
+
 echo "✅ Configuration written to /root/.openclaw/openclaw.json"
-cat /root/.openclaw/openclaw.json
+
+# Create required directories
+mkdir -p /root/.openclaw/agents/main/sessions
+mkdir -p /root/.openclaw/credentials
+chmod 700 /root/.openclaw/agents/main/sessions
+chmod 700 /root/.openclaw/credentials
 
 # Setup email if credentials provided
 if [ -n "$GMAIL_EMAIL" ] && [ -n "$GMAIL_APP_PASSWORD" ]; then
@@ -78,9 +87,6 @@ fi
 echo ""
 echo "🌐 Gateway UI: http://$(hostname -i):18789"
 echo ""
-
-# Run doctor to fix any legacy config issues
-openclaw doctor --fix 2>/dev/null || true
 
 # Start OpenClaw Gateway
 exec openclaw gateway start
