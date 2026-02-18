@@ -1,7 +1,7 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM:-node:20-alpine}
 
-# Install system dependencies including Node.js
+# Install system dependencies including Node.js and CMake
 RUN apk update && apk add --no-cache \
     git \
     curl \
@@ -10,6 +10,7 @@ RUN apk update && apk add --no-cache \
     openssh-client \
     python3 \
     make \
+    cmake \
     g++ \
     linux-headers \
     nodejs \
