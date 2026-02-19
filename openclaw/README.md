@@ -1,138 +1,155 @@
 # 🦞 OpenClaw AI Assistant - Home Assistant Add-on
 
-AI personal assistant с интеграцией Telegram, Email и Home Assistant.
+AI personal assistant with Telegram, Email, and Home Assistant integration.
 
-## ⚡ Быстрая установка
+## ⚡ Quick Setup
 
-### 1. Добавь репозиторий
+### 1. Install the Add-on
 
-В Home Assistant:
-1. **Supervisor** → **Add-on Store**
-2. **⋮** (три точки) → **Repositories**
-3. Добавь URL: `https://github.com/openclaw/openclaw-addon`
-4. **Add**
+1. Go to **Supervisor** → **Add-on Store**
+2. Find **OpenClaw AI Assistant**
+3. Click **Install**
+4. Wait for installation to complete
 
-### 2. Установи Add-on
+### 2. Configure
 
-1. Найди **OpenClaw AI Assistant** в магазине
-2. **Install**
-3. Дождись установки
+Go to **Configuration** tab and fill in:
 
-### 3. Настрой
+| Field | Description | Example |
+|-------|-------------|---------|
+| `telegram_token` | Bot token from @BotFather | `8382047308:AA...` |
+| `gateway_token` | Any secure string for Gateway auth | `my-secret-token-123` |
+| `gmail_email` | Your Gmail address (optional) | `you@gmail.com` |
+| `gmail_app_password` | Gmail app password (optional) | `xxxx xxxx xxxx xxxx` |
+| `timezone` | Your timezone (optional) | `Europe/Lisbon` |
 
-**Configuration** → Заполни:
+### 3. Start
 
-| Поле | Описание | Пример |
-|------|----------|--------|
-| `telegram_token` | Токен бота от @BotFather | `8382047308:AA...` |
-| `telegram_allowed_users` | Твой Telegram ID | `885810` |
-| `gateway_token` | Любая строка (безопасность) | `my-secret-token-123` |
-| `timezone` | Часовой пояс | `Europe/Lisbon` |
-| `gmail_email` | Email для почты (опционально) | `a.d.safronov@gmail.com` |
-| `gmail_app_password` | App password от Google | `xxxx xxxx xxxx xxxx` |
-| `homeassistant_url` | URL HA (опционально) | `http://homeassistant.local:8123` |
-| `homeassistant_token` | Long-lived token HA | `eyJhbG...` |
+1. Go to **Info** tab
+2. Click **Start**
+3. Wait ~30 seconds for startup
 
-### 4. Запусти
+### 4. Verify
 
-1. **Start** (если не включено Auto-start)
-2. Открой **Open Web UI** или перейди на `http://homeassistant.local:18789`
+**Option A: Check Logs**
+- Go to **Log** tab
+- Should see: `🦞 Starting OpenClaw...` and `✅ Configuration loaded successfully`
+
+**Option B: Test Telegram**
+- Open your bot in Telegram
+- Send: `/start` or `hello`
+- Bot should respond!
+
+**Option C: Open Web UI**
+- Click **Open Web UI**
+- Or go to: `http://homeassistant.local:18789`
 
 ---
 
-## 🔐 Получение Telegram токена
+## 🔐 Getting Your Telegram Token
 
-1. Открой @BotFather в Telegram
-2. `/newbot` → придумай имя
-3. Скопируй токен
-4. Для своего ID: напиши @userinfobot → получишь ID
+1. Open @BotFather in Telegram
+2. Send `/newbot`
+3. Follow prompts to name your bot
+4. Copy the token (looks like: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`)
+
+**To find your Telegram ID:**
+- Message @userinfobot
+- It will reply with your ID (e.g., `885810`)
+
+---
 
 ## 🔐 Gmail App Password
 
-1. https://myaccount.google.com/apppasswords
-2. Выбери приложение → "Other"
-3. Скопируй 16-значный пароль
-
-## 🔐 Home Assistant Long-lived Token
-
-1. Профиль → **Long-Lived Access Token**
-2. **Create Token**
-3. Скопируй
+1. Go to https://myaccount.google.com/apppasswords
+2. Select app → "Other (Custom name)"
+3. Enter name: "OpenClaw"
+4. Copy the 16-character password
 
 ---
 
-## 📊 Интеграции
+## 🏠 Home Assistant Integration (Optional)
 
-### Telegram
-- Отвечает на сообщения
-- Уведомления от HA
-- Команды через бота
+To let OpenClaw control your Home Assistant devices:
 
-### Email
-- Проверка почты (Himalaya CLI)
-- Daily digest (cron)
-
-### Home Assistant
-- Чтение состояния устройств
-- Отправка команд
-- Автоматизации через API
-
-### Notion
-- Синхронизация задач
-- Базы данных
+1. In HA: **Profile** → **Long-Lived Access Token** → **Create Token**
+2. Copy the token
+3. Add to OpenClaw configuration (advanced - requires config edit)
 
 ---
 
-## 🛠 Управление
+## 🛠 Management
 
+**Via Home Assistant UI:**
+- **Start/Stop/Restart**: Info tab
+- **Logs**: Log tab
+- **Configuration**: Configuration tab
+
+**Via SSH (if you have access):**
 ```bash
-# Логи
-docker logs addon_openclaw
+# View logs
+ha addons logs openclaw
 
-# Перезапуск
-docker restart addon_openclaw
+# Restart
+ha addons restart openclaw
 
-# Консоль
-docker exec -it addon_openclaw bash
+# Stop
+ha addons stop openclaw
 ```
 
 ---
 
-## 📁 Хранение данных
+## 📁 Data Storage
 
-Данные сохраняются в:
-- `/ssl/openclaw/` — credentials, memory
-- `/workspace/` — конфиги, скрипты
+All data is stored in:
+- `/addon_configs/openclaw/` - Configuration
+- `/data/addons/data/openclaw/` - Persistent data (memory, sessions, credentials)
 
-**Бэкап:**
+**Backup:**
 ```bash
-tar -czf openclaw-backup.tar.gz /ssl/openclaw/
+tar -czf openclaw-backup.tar.gz /data/addons/data/openclaw/
 ```
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Бот не отвечает
-1. Проверь токен в настройках
-2. Проверь `telegram_allowed_users`
-3. Напиши `/start` в Telegram
+### Bot doesn't respond
 
-### Email не работает
-1. Проверь app password
-2. Проверь логи: `docker logs addon_openclaw | grep himalaya`
+1. Check logs for errors
+2. Verify `telegram_token` is correct
+3. Make sure bot is not blocked
+4. Send `/start` to the bot in Telegram
 
-### Gateway не открывается
-1. Проверь порт 18789
-2. Попробуй по IP: `http://192.168.1.XXX:18789`
+### Configuration not loading
+
+1. Check **Log** tab for "Configuration loaded successfully"
+2. Verify both `telegram_token` and `gateway_token` are set
+3. Click **Save** after changing configuration
+4. **Restart** the add-on after saving
+
+### Gateway UI not accessible
+
+1. Try: `http://homeassistant.local:18789`
+2. Or by IP: `http://192.168.1.XXX:18789`
+3. Check firewall settings
+4. Verify add-on is running (Info tab → should show "running")
+
+### Email not working
+
+1. Verify Gmail app password is correct
+2. Check logs for authentication errors
+3. Ensure 2FA is enabled on your Google account
+4. Generate a new app password if needed
 
 ---
 
-## 📚 Документация
+## 📚 Resources
 
-- [OpenClaw Docs](https://docs.openclaw.ai)
+- [OpenClaw Documentation](https://docs.openclaw.ai)
 - [Home Assistant Add-ons](https://developers.home-assistant.io/docs/add-ons/)
+- [Telegram Bot API](https://core.telegram.org/bots/api)
 
 ---
 
-**Вопросы?** Пиши в Telegram боту 🦞
+**Questions?** Message the bot in Telegram! 🦞

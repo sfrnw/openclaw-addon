@@ -1,116 +1,130 @@
 # 🦞 OpenClaw Home Assistant Add-on Repository
 
-Репозиторий для публикации OpenClaw как Home Assistant Add-on.
+Home Assistant add-on for OpenClaw AI Assistant.
 
-## 📁 Структура
+## 📁 Structure
 
 ```
 homeassistant-addon/
+├── repository.json        # Repository metadata for HA
+├── README.md              # This file
 └── openclaw/
-    ├── config.json      # Конфигурация add-on
-    ├── Dockerfile       # Сборка образа
-    ├── run.sh           # Скрипт запуска
-    └── README.md        # Инструкция для пользователя
+    ├── config.json        # Add-on configuration
+    ├── Dockerfile         # Docker build instructions
+    ├── run.sh             # Startup script
+    ├── README.md          # User documentation
+    └── CHANGELOG.md       # Version history
 ```
 
-## 🚀 Публикация Add-on
+## 🚀 Installation
 
-### Вариант 1: GitHub Repository (рекомендуется)
+### Option 1: Add Repository to Home Assistant (Recommended)
 
-1. **Создай репозиторий** на GitHub:
-   ```bash
-   cd ~/.openclaw/workspace/pi-deploy/homeassistant-addon
-   git init
-   git add .
-   git commit -m "Initial OpenClaw add-on"
-   git remote add origin https://github.com/YOUR_USERNAME/openclaw-addon.git
-   git push -u origin main
-   ```
+1. **Add Repository:**
+   - In Home Assistant: **Supervisor** → **Add-on Store**
+   - Click **⋮** (three dots) → **Repositories**
+   - Add: `https://github.com/sfrnw/openclaw-addon`
+   - Click **Add**
 
-2. **Добавь в HA Supervisor**:
-   - Supervisor → Add-on Store
-   - ⋮ → Repositories
-   - Добавь: `https://github.com/YOUR_USERNAME/openclaw-addon`
-   - **Add**
+2. **Install:**
+   - Find **OpenClaw AI Assistant** in the store
+   - Click **Install**
+   - Wait for installation
 
-3. **Установи**:
-   - Найди "OpenClaw AI Assistant"
-   - Install → Start
+3. **Configure:**
+   - Go to **Configuration** tab
+   - Set `telegram_token` and `gateway_token`
+   - Click **Save**
 
-### Вариант 2: Локальная установка (для тестов)
+4. **Start:**
+   - Go to **Info** tab
+   - Click **Start**
 
-1. **Скопируй в HA**:
-   ```bash
-   # Через SSH на Pi
-   scp -r openclaw/ root@homeassistant.local:/addons/
-   ```
-
-2. **Перезагрузи Supervisor**:
-   - Developer Tools → YAML → Check Configuration
-   - Или: `ha supervisor reload`
-
-3. **Установи**:
-   - Supervisor → Add-on Store → OpenClaw
-
----
-
-## 🔧 Сборка образа (опционально)
-
-Если хочешь опубликовать образ в GHCR:
+### Option 2: Local Installation (For Testing)
 
 ```bash
-# Локальная сборка
-docker build -t openclaw-addon-aarch64 .
+# Copy to Home Assistant
+scp -r openclaw/ root@homeassistant.local:/addon_configs/openclaw/
 
-# Тест
-docker run -p 18789:18789 openclaw-addon-aarch64
+# Reload supervisor
+ha supervisor reload
+
+# Install
+ha addons install local_openclaw
 ```
 
 ---
 
-## 📝 Конфигурация
+## 🔧 Development
 
-### config.json
+### Building Locally
 
-| Поле | Значение |
-|------|----------|
-| `name` | OpenClaw AI Assistant |
-| `version` | 1.0.0 |
-| `arch` | aarch64, armv7 (Pi совместимо) |
-| `ports` | 18789/tcp |
-| `startup` | application |
+```bash
+cd openclaw
 
-### Переменные (schema)
+# Build for aarch64 (Raspberry Pi)
+docker build -t openclaw-addon-aarch64 --build-arg BUILD_FROM=node:20-alpine .
 
-| Переменная | Required | Описание |
-|------------|----------|----------|
-| `telegram_token` | ✅ | Токен бота |
-| `telegram_allowed_users` | ✅ | Список ID |
-| `gateway_token` | ✅ | Токен безопасности |
-| `timezone` | ❌ | Europe/Lisbon |
-| `gmail_email` | ❌ | Email |
-| `gmail_app_password` | ❌ | App password |
-| `notion_api_key` | ❌ | Notion API |
-| `homeassistant_url` | ❌ | HA URL |
-| `homeassistant_token` | ❌ | HA Token |
+# Test
+docker run -p 18789:18789 -v ./test-options.json:/data/options.json openclaw-addon-aarch64
+```
 
----
+### Version Management
 
-## 🎯 Следующие шаги
+1. Update `config.json` → `version` field
+2. Update `CHANGELOG.md` with changes
+3. Commit and push:
+   ```bash
+   git add .
+   git commit -m "vX.Y.Z: Description of changes"
+   git push
+   ```
 
-1. **Создать GitHub репозиторий** для add-on
-2. **Запушить файлы**
-3. **Добавить в HA Supervisor**
-4. **Установить и настроить**
+4. In Home Assistant: **⋮** → **Check for updates**
 
 ---
 
-## 📚 Ресурсы
+## 📝 Configuration Schema
 
-- [HA Add-on Documentation](https://developers.home-assistant.io/docs/add-ons/)
-- [HA Add-on Examples](https://github.com/home-assistant/addons)
-- [OpenClaw Docs](https://docs.openclaw.ai)
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `telegram_token` | string | ✅ | Telegram bot token from @BotFather |
+| `gateway_token` | string | ✅ | Security token for Gateway authentication |
+| `gmail_email` | string | ❌ | Gmail address for email integration |
+| `gmail_app_password` | string | ❌ | Gmail app password (16 characters) |
+| `timezone` | string | ❌ | Timezone (default: Europe/Lisbon) |
 
 ---
 
-🦞
+## 🐛 Troubleshooting
+
+### Add-on doesn't show up
+
+1. Make sure repository is added correctly
+2. Click **⋮** → **Check for updates**
+3. Try: `ha supervisor reload` via SSH
+
+### Configuration not saving
+
+1. Make sure you click **Save** after editing
+2. Check for validation errors
+3. Try clearing browser cache
+
+### Build fails
+
+1. Check `ha addons logs openclaw` for errors
+2. Verify all required fields are set
+3. Try uninstalling and reinstalling
+
+---
+
+## 📚 Resources
+
+- [Home Assistant Add-on Documentation](https://developers.home-assistant.io/docs/add-ons/)
+- [OpenClaw Documentation](https://docs.openclaw.ai)
+- [Home Assistant Community](https://community.home-assistant.io/)
+
+---
+
+**License:** MIT  
+**Maintainer:** Aleksandr Safronov (@sfrnw)

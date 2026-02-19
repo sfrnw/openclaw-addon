@@ -1,44 +1,47 @@
 # Changelog
 
+## [2.0.0] - 2026-02-19
+
+### Complete Rewrite
+
+**Major Changes:**
+- Complete rewrite of the add-on from scratch
+- Fixed configuration loading from Home Assistant options.json
+- Added proper validation for required fields
+- Added jq for JSON parsing (more reliable than environment variables)
+
+**Fixed:**
+- Configuration now properly loads from `/data/options.json` (standard HA add-on pattern)
+- Telegram token and gateway token are now correctly passed to OpenClaw
+- Added validation to fail fast if required config is missing
+- Removed reliance on environment variables (unreliable in HA add-ons)
+
+**Added:**
+- `jq` package for JSON parsing
+- Detailed logging during startup
+- Configuration validation with clear error messages
+- Better error handling and user feedback
+
+**Technical:**
+- All documentation now in English
+- Cleaner run.sh script with proper error handling
+- Secure file permissions (700 for directories, 600 for config files)
+- Standard Home Assistant add-on structure
+
+---
+
 ## [1.0.5] - 2026-02-18
 
-### Fixed
-- Simplified Telegram config to minimal valid schema for v1.x
-- Removed `allowlist` / `allowedUsers` (not valid keys in v1.x)
-- Set `dmPolicy: pairing` (default, no allowlist needed)
-- Removed unused config options: `timezone`, `telegram_allowed_users`, `notion_api_key`, `homeassistant_*`
-- Added default value for `GATEWAY_TOKEN` if not provided
+### Deprecated
 
-## [1.0.4] - 2026-02-18
+This version and all v1.x versions are deprecated. Please upgrade to v2.0.0.
 
-### Fixed
-- Fixed Telegram config format for OpenClaw v1.x
-- Changed `channels.telegram.allowedUsers` → `channels.telegram.allowlist`
-- Added `channels.telegram.enabled: true` and `dmPolicy: allowlist`
-- Added `gateway.bind: loopback` and `gateway.auth.mode: token`
-- Removed `defaults` section (not valid in v1.x schema)
+**Known Issues in v1.x:**
+- Configuration not properly passed from Home Assistant UI
+- Environment variables not working reliably
+- Multiple schema compatibility issues
 
-## [1.0.3] - 2026-02-18
-
-### Fixed
-- Added `gateway.mode: local` to config (required for gateway start)
-- Create required directories: `sessions`, `credentials`
-- Set secure permissions: `~/.openclaw` (700), `openclaw.json` (600)
-- Removed `openclaw doctor --fix` (not needed with correct config)
-
-## [1.0.2] - 2026-02-18
-
-### Fixed
-- Updated config format to match OpenClaw v1.x schema
-- Changed `gateway.token` → `gateway.auth.token`
-- Removed deprecated `gateway.host` field
-- Added `openclaw doctor --fix` to auto-migrate legacy configs
-
-## [1.0.1] - 2026-02-18
-
-### Fixed
-- Fixed `run.sh` to use default config path (`/root/.openclaw/openclaw.json`) instead of `--config` flag
-- Removed `--config` argument from `openclaw gateway start` command which caused startup failure
+---
 
 ## [1.0.0] - 2026-02-18
 
@@ -47,6 +50,4 @@
 - Home Assistant Add-on for OpenClaw AI Assistant
 - Telegram integration
 - Email support (Gmail via Himalaya)
-- Home Assistant API integration (optional)
-- Notion integration (optional)
 - Web UI on port 18789

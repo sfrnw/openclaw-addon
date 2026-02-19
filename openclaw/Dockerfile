@@ -1,7 +1,7 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM:-node:20-alpine}
 
-# Install system dependencies including Node.js and CMake
+# Install system dependencies
 RUN apk update && apk add --no-cache \
     git \
     curl \
@@ -14,7 +14,8 @@ RUN apk update && apk add --no-cache \
     g++ \
     linux-headers \
     nodejs \
-    npm
+    npm \
+    jq
 
 # Install OpenClaw globally
 RUN npm install -g openclaw

@@ -1,0 +1,10 @@
+{
+  "authorized_keys": [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJWya845JYnGmDBYyY3P/qd0AkBa3B26uSqpZVV8bHVK homeassistant"
+  ],
+  "password": "@HomeAssistant239#",
+  "apks": [],
+  "server": {
+    "tcp_forwarding": true
+  }
+}
