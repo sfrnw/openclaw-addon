@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2] - 2026-02-19
+
+### Fixed
+- Added persistent storage: `/data` → `/home/node/.openclaw` (config now survives restarts!)
+- Added `homeassistant_api: true` for HA integration
+- Config now persists between add-on restarts
+
 ## [3.0.1] - 2026-02-19
 
 ### Fixed
@@ -7,7 +14,6 @@
 - Telegram token now written directly to config file (not via CLI command)
 - Config includes both gateway and channels sections on first run
 - Updated startup message to show correct version (v3.0.1)
-- Added debug output to show environment variables for troubleshooting
 
 ## [3.0.0] - 2026-02-19
 

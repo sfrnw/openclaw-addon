@@ -1,6 +1,6 @@
 {
   "name": "OpenClaw AI Assistant",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "slug": "openclaw",
   "description": "Official OpenClaw AI assistant based on docker-setup.sh",
   "arch": ["aarch64", "armv7"],
@@ -18,5 +18,9 @@
     "telegram_token": "str?"
   },
   "init": false,
-  "map": ["config:ro"]
+  "map": ["config:ro"],
+  "homeassistant_api": true,
+  "path": {
+    "/home/node/.openclaw": "/data"
+  }
 }
