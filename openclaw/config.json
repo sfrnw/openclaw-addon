@@ -1,8 +1,8 @@
 {
   "name": "OpenClaw AI Assistant",
-  "version": "2.0.5",
+  "version": "3.0.0",
   "slug": "openclaw",
-  "description": "AI personal assistant with Telegram integration",
+  "description": "Official OpenClaw AI assistant based on docker-setup.sh",
   "arch": ["aarch64", "armv7"],
   "url": "https://github.com/sfrnw/openclaw-addon",
   "startup": "application",
@@ -12,12 +12,11 @@
   },
   "homeassistant": "2023.1.0",
   "options": {
-    "telegram_token": "",
-    "gateway_token": ""
+    "telegram_token": ""
   },
   "schema": {
-    "telegram_token": "str",
-    "gateway_token": "str"
+    "telegram_token": "str?"
   },
-  "init": false
+  "init": false,
+  "map": ["config:ro"]
 }

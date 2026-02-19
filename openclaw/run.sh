@@ -1,60 +1,50 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-# npm global bin is in /usr/local/bin on Alpine
-# No need to modify PATH
+echo "🦞 Starting OpenClaw (v3.0.0 - Official Docker Flow)..."
 
-echo "🦞 Starting OpenClaw..."
+CONFIG_DIR="/home/node/.openclaw"
+CONFIG_FILE="$CONFIG_DIR/openclaw.json"
 
-# Check if openclaw exists
-if ! command -v openclaw >/dev/null 2>&1; then
-    echo "ERROR: openclaw not installed!"
-    echo "PATH: $PATH"
-    which node || echo "node not found"
-    which npm || echo "npm not found"
-    ls -la /usr/local/bin/ | grep openclaw || echo "openclaw not in /usr/local/bin"
-    exit 1
-fi
+# Create config directory
+mkdir -p "$CONFIG_DIR"
 
-TELEGRAM_TOKEN="${TELEGRAM_TOKEN}"
-GATEWAY_TOKEN="${GATEWAY_TOKEN}"
-
-if [ -z "$TELEGRAM_TOKEN" ]; then
-    echo "ERROR: telegram_token required"
-    exit 1
-fi
-
-if [ -z "$GATEWAY_TOKEN" ]; then
-    echo "ERROR: gateway_token required"
-    exit 1
-fi
-
-echo "✅ Tokens loaded"
-
-mkdir -p /root/.openclaw
-
-cat > /root/.openclaw/openclaw.json << EOF
+# Check if config exists
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "📝 No config found, generating minimal config..."
+    
+    # Generate gateway token if not provided
+    GATEWAY_TOKEN="${GATEWAY_TOKEN:-$(openssl rand -hex 32)}"
+    
+    cat > "$CONFIG_FILE" << EOF
 {
   "gateway": {
     "port": 18789,
     "mode": "local",
-    "bind": "loopback",
+    "bind": "0.0.0.0",
     "auth": {
       "mode": "token",
       "token": "$GATEWAY_TOKEN"
     }
-  },
-  "channels": {
-    "telegram": {
-      "enabled": true,
-      "botToken": "$TELEGRAM_TOKEN",
-      "dmPolicy": "pairing"
-    }
   }
 }
 EOF
+    echo "✅ Config generated at $CONFIG_FILE"
+    echo "🔑 Gateway Token: $GATEWAY_TOKEN"
+else
+    echo "✅ Config found at $CONFIG_FILE"
+fi
 
-echo "✅ Config written"
+# Configure Telegram if token provided
+if [ -n "$TELEGRAM_TOKEN" ]; then
+    echo "📱 Configuring Telegram..."
+    openclaw channels add --channel telegram --token "$TELEGRAM_TOKEN" 2>/dev/null || echo "⚠️ Telegram config skipped (may already exist)"
+fi
+
+echo ""
 echo "🌐 Web UI: http://$(hostname -i):18789"
+echo "🚀 Starting Gateway..."
+echo ""
 
-exec openclaw gateway start
+# Start gateway
+exec openclaw gateway --port 18789 --allow-unconfigured

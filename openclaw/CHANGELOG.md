@@ -1,37 +1,39 @@
 # Changelog
 
-## [2.0.5] - 2026-02-19
+## [3.0.0] - 2026-02-19
 
-### Fixed
-- Removed incorrect PATH override (npm global bin is already in /usr/local/bin on Alpine)
-- Added verification that openclaw binary exists before starting
-- Added debug output for troubleshooting
+### Complete Rewrite Based on Official Documentation
 
-## [2.0.4] - 2026-02-19
+**Research:** Studied official OpenClaw Docker documentation at docs.openclaw.ai/install/docker
 
-### Fixed
-- Read config from environment variables (standard HA add-on pattern)
+**Major Changes:**
+- Complete rewrite based on official `docker-setup.sh` flow
+- Uses official OpenClaw npm package (`npm install -g openclaw@latest`)
+- Follows official Docker Compose structure
+- Config stored at `/home/node/.openclaw/` (standard OpenClaw location)
+- Gateway token auto-generated on first run
+- Channels configured via CLI commands (official method)
 
-## [2.0.3] - 2026-02-19
+**Fixed:**
+- No more environment variable issues - uses standard OpenClaw config file
+- Proper Node.js version (22-bookworm as per official docs)
+- Correct user permissions (runs as `node` user, not root)
+- Gateway bind to `0.0.0.0` for container accessibility
+- Uses `--allow-unconfigured` flag as per official Docker flow
 
-### Fixed
-- Removed build-time verification that caused Docker build to fail
-- Simplified Dockerfile to absolute minimum
+**Simplified:**
+- Only `telegram_token` optional in config (all other config via Web UI)
+- No complex schema - minimal configuration required
+- Auto-generates gateway token on first run
 
-## [2.0.2] - 2026-02-19
+**Technical:**
+- Base image: `node:22-bookworm` (official runtime requirement)
+- Config location: `/home/node/.openclaw/openclaw.json`
+- Gateway port: 18789 (standard)
+- Auth: Token-based (generated automatically)
 
-### Fixed
-- Added npm global bin to PATH (`/root/.npm-global/bin`)
+---
 
-## [2.0.1] - 2026-02-19
+## [2.0.5] and Earlier - Deprecated
 
-### Fixed
-- Simplified Dockerfile to minimal dependencies
-- Fixed run.sh to use `/bin/sh` instead of bash
-- Removed complex error handling that caused issues
-- Simplified config.json schema
-
-## [2.0.0] - 2026-02-19
-
-### Changed
-- Complete rewrite with proper options.json loading
+All v1.x and v2.x versions are deprecated. Upgrade to v3.0.0 for official Docker flow.

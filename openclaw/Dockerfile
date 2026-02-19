@@ -1,14 +1,27 @@
-FROM node:20-alpine
+FROM node:22-bookworm
 
-RUN apk add --no-cache git curl gnupg pass jq
+# Install dependencies (from official docker-setup.sh)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    gnupg \
+    pass \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g openclaw
+# Install OpenClaw globally
+RUN npm install -g openclaw@latest
 
-# Verify openclaw is installed
-RUN which openclaw || echo "openclaw not found!"
+# Create home directory structure
+RUN mkdir -p /home/node/.openclaw && chown -R node:node /home/node
 
+WORKDIR /home/node
+
+# Copy startup script
 COPY run.sh /run.sh
-RUN chmod +x /run.sh
+RUN chmod +x /run.sh && chown node:node /run.sh
+
+USER node
 
 EXPOSE 18789
 
