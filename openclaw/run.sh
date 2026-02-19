@@ -3,11 +3,17 @@ set -e
 
 echo "🦞 Starting OpenClaw (v3.0.1 - Official Docker Flow)..."
 
-CONFIG_DIR="/home/node/.openclaw"
+CONFIG_DIR="/data"
 CONFIG_FILE="$CONFIG_DIR/openclaw.json"
 
 # Create config directory
 mkdir -p "$CONFIG_DIR"
+
+# Symlink for OpenClaw compatibility
+mkdir -p /home/node/.openclaw
+if [ ! -L /home/node/.openclaw/config ]; then
+    ln -sf /data /home/node/.openclaw/config 2>/dev/null || true
+fi
 
 # Check if config exists
 if [ ! -f "$CONFIG_FILE" ]; then

@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.3] - 2026-02-19
+
+### Fixed
+- Use `map: ["data"]` (standard HA add-on pattern) instead of `volumes`
+- Config stored at `/data/openclaw.json` (HA persistent storage)
+- Symlink created for OpenClaw compatibility
+
 ## [3.0.2] - 2026-02-19
 
 ### Fixed
