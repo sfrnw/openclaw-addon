@@ -1,34 +1,17 @@
-ARG BUILD_FROM
-FROM ${BUILD_FROM:-node:20-alpine}
+FROM node:20-alpine
 
-# Install system dependencies
-RUN apk update && apk add --no-cache \
-    git \
-    curl \
-    gnupg \
-    pass \
-    openssh-client \
-    python3 \
-    make \
-    cmake \
-    g++ \
-    linux-headers \
-    nodejs \
-    npm \
-    jq
+# Install dependencies
+RUN apk add --no-cache git curl gnupg pass jq
 
-# Install OpenClaw globally
+# Install OpenClaw
 RUN npm install -g openclaw
 
-# Create workspace directory
-WORKDIR /workspace
-
-# Copy entrypoint script
+# Copy startup script
 COPY run.sh /run.sh
-RUN chmod a+x /run.sh
+RUN chmod +x /run.sh
 
-# Expose Gateway port
+# Expose port
 EXPOSE 18789
 
-# Run OpenClaw
+# Run
 CMD ["/run.sh"]

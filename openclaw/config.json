@@ -1,8 +1,8 @@
 {
   "name": "OpenClaw AI Assistant",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "slug": "openclaw",
-  "description": "AI personal assistant with Telegram, Email, and Home Assistant integration",
+  "description": "AI personal assistant with Telegram integration",
   "arch": ["aarch64", "armv7"],
   "url": "https://github.com/sfrnw/openclaw-addon",
   "startup": "application",
@@ -10,26 +10,14 @@
   "ports": {
     "18789/tcp": 18789
   },
-  "ports_description": {
-    "18789/tcp": "OpenClaw Gateway Web UI"
-  },
   "homeassistant": "2023.1.0",
-  "host_network": false,
-  "privileged": [],
-  "devices": [],
   "options": {
     "telegram_token": "",
     "gateway_token": ""
   },
   "schema": {
     "telegram_token": "str",
-    "gateway_token": "str",
-    "gmail_email": "str?",
-    "gmail_app_password": "str?",
-    "timezone": "str?"
+    "gateway_token": "str"
   },
-  "init": false,
-  "map": ["config:ro"],
-  "hassio_api": false,
-  "image": "local/openclaw-addon-{arch}"
+  "init": false
 }
