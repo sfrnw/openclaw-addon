@@ -7,6 +7,7 @@
 - Telegram token now written directly to config file (not via CLI command)
 - Config includes both gateway and channels sections on first run
 - Updated startup message to show correct version (v3.0.1)
+- Added debug output to show environment variables for troubleshooting
 
 ## [3.0.0] - 2026-02-19
 

@@ -35,8 +35,14 @@ else
     echo "✅ Config found at $CONFIG_FILE"
 fi
 
-# Configure Telegram if token provided
-if [ -n "$TELEGRAM_TOKEN" ]; then
+# Debug: show all env vars (first 3 lines)
+echo "🔍 Env vars:" | head -3
+env | grep -i telegram || echo "No TELEGRAM env vars found"
+env | grep -i token || echo "No TOKEN env vars found"
+
+# Configure Telegram if token provided (try multiple variable names)
+if [ -n "$TELEGRAM_TOKEN" ] || [ -n "$telegram_token" ]; then
+    TBOT="${TELEGRAM_TOKEN:-$telegram_token}"
     echo "📱 Configuring Telegram..."
     # Update config file with telegram token
     cat > "$CONFIG_FILE" << EOF
@@ -53,13 +59,15 @@ if [ -n "$TELEGRAM_TOKEN" ]; then
   "channels": {
     "telegram": {
       "enabled": true,
-      "botToken": "$TELEGRAM_TOKEN",
+      "botToken": "$TBOT",
       "dmPolicy": "pairing"
     }
   }
 }
 EOF
     echo "✅ Telegram configured"
+else
+    echo "⚠️ No Telegram token found (set telegram_token in HA config)"
 fi
 
 echo ""
