@@ -21,7 +21,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
   "gateway": {
     "port": 18789,
     "mode": "local",
-    "bind": "0.0.0.0",
+    "bind": "lan",
     "auth": {
       "mode": "token",
       "token": "$GATEWAY_TOKEN"
@@ -38,7 +38,28 @@ fi
 # Configure Telegram if token provided
 if [ -n "$TELEGRAM_TOKEN" ]; then
     echo "📱 Configuring Telegram..."
-    openclaw channels add --channel telegram --token "$TELEGRAM_TOKEN" 2>/dev/null || echo "⚠️ Telegram config skipped (may already exist)"
+    # Update config file with telegram token
+    cat > "$CONFIG_FILE" << EOF
+{
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "$GATEWAY_TOKEN"
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "$TELEGRAM_TOKEN",
+      "dmPolicy": "pairing"
+    }
+  }
+}
+EOF
+    echo "✅ Telegram configured"
 fi
 
 echo ""

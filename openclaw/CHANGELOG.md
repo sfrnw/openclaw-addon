@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1] - 2026-02-19
+
+### Fixed
+- Changed `gateway.bind` from `"0.0.0.0"` to `"lan"` (valid OpenClaw value)
+- Telegram token now written directly to config file (not via CLI command)
+- Config includes both gateway and channels sections on first run
+
 ## [3.0.0] - 2026-02-19
 
 ### Complete Rewrite Based on Official Documentation
