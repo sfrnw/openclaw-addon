@@ -3,8 +3,8 @@
 ## [3.0.2] - 2026-02-19
 
 ### Fixed
-- Added persistent storage: `/data` → `/home/node/.openclaw` (config now survives restarts!)
-- Added `homeassistant_api: true` for HA integration
+- Added persistent storage with `volumes` (not `path`): `/data` → `/home/node/.openclaw`
+- Added `hassio_api: true` for Supervisor access
 - Config now persists between add-on restarts
 
 ## [3.0.1] - 2026-02-19

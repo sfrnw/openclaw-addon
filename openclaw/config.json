@@ -20,7 +20,8 @@
   "init": false,
   "map": ["config:ro"],
   "homeassistant_api": true,
-  "path": {
-    "/home/node/.openclaw": "/data"
+  "hassio_api": true,
+  "volumes": {
+    "/data": "/home/node/.openclaw"
   }
 }
