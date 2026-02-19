@@ -1,10 +1,16 @@
 # Changelog
 
+## [2.0.5] - 2026-02-19
+
+### Fixed
+- Removed incorrect PATH override (npm global bin is already in /usr/local/bin on Alpine)
+- Added verification that openclaw binary exists before starting
+- Added debug output for troubleshooting
+
 ## [2.0.4] - 2026-02-19
 
 ### Fixed
 - Read config from environment variables (standard HA add-on pattern)
-- Removed /data/options.json parsing (wrong location for addon-specific config)
 
 ## [2.0.3] - 2026-02-19
 

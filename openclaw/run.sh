@@ -1,21 +1,31 @@
 #!/bin/sh
 set -e
 
-export PATH="/root/.npm-global/bin:$PATH"
+# npm global bin is in /usr/local/bin on Alpine
+# No need to modify PATH
 
 echo "🦞 Starting OpenClaw..."
 
-# HA passes config as env vars
+# Check if openclaw exists
+if ! command -v openclaw >/dev/null 2>&1; then
+    echo "ERROR: openclaw not installed!"
+    echo "PATH: $PATH"
+    which node || echo "node not found"
+    which npm || echo "npm not found"
+    ls -la /usr/local/bin/ | grep openclaw || echo "openclaw not in /usr/local/bin"
+    exit 1
+fi
+
 TELEGRAM_TOKEN="${TELEGRAM_TOKEN}"
 GATEWAY_TOKEN="${GATEWAY_TOKEN}"
 
 if [ -z "$TELEGRAM_TOKEN" ]; then
-    echo "ERROR: telegram_token required in Configuration"
+    echo "ERROR: telegram_token required"
     exit 1
 fi
 
 if [ -z "$GATEWAY_TOKEN" ]; then
-    echo "ERROR: gateway_token required in Configuration"
+    echo "ERROR: gateway_token required"
     exit 1
 fi
 
