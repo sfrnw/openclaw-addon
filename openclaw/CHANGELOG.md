@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.5] - 2026-02-19
+
+### Fixed
+- Read Telegram token from `/data/options.json` (standard HA add-on pattern)
+- Uses `jq` to parse options.json
+
 ## [3.0.4] - 2026-02-19
 
 ### Fixed

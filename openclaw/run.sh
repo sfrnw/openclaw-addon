@@ -1,26 +1,27 @@
 #!/bin/bash
 set -e
 
-echo "🦞 Starting OpenClaw (v3.0.1 - Official Docker Flow)..."
+echo "🦞 Starting OpenClaw (v3.0.5 - Official Docker Flow)..."
 
 CONFIG_DIR="/data"
 CONFIG_FILE="$CONFIG_DIR/openclaw.json"
+OPTIONS_FILE="/data/options.json"
 
 # Create config directory
 mkdir -p "$CONFIG_DIR"
 
-# Symlink for OpenClaw compatibility
-mkdir -p /home/node/.openclaw
-if [ ! -L /home/node/.openclaw/config ]; then
-    ln -sf /data /home/node/.openclaw/config 2>/dev/null || true
+# Read Telegram token from HA options.json
+TELEGRAM_TOKEN=""
+if [ -f "$OPTIONS_FILE" ]; then
+    TELEGRAM_TOKEN=$(jq -r '.telegram_token // empty' "$OPTIONS_FILE" 2>/dev/null || echo "")
 fi
 
 # Check if config exists
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "📝 No config found, generating minimal config..."
     
-    # Generate gateway token if not provided
-    GATEWAY_TOKEN="${GATEWAY_TOKEN:-$(openssl rand -hex 32)}"
+    # Generate gateway token
+    GATEWAY_TOKEN="$(openssl rand -hex 32)"
     
     cat > "$CONFIG_FILE" << EOF
 {
@@ -41,14 +42,8 @@ else
     echo "✅ Config found at $CONFIG_FILE"
 fi
 
-# Debug: show all env vars (first 3 lines)
-echo "🔍 Env vars:" | head -3
-env | grep -i telegram || echo "No TELEGRAM env vars found"
-env | grep -i token || echo "No TOKEN env vars found"
-
-# Configure Telegram if token provided (try multiple variable names)
-if [ -n "$TELEGRAM_TOKEN" ] || [ -n "$telegram_token" ]; then
-    TBOT="${TELEGRAM_TOKEN:-$telegram_token}"
+# Configure Telegram if token provided
+if [ -n "$TELEGRAM_TOKEN" ] && [ "$TELEGRAM_TOKEN" != "null" ]; then
     echo "📱 Configuring Telegram..."
     # Update config file with telegram token
     cat > "$CONFIG_FILE" << EOF
@@ -65,7 +60,7 @@ if [ -n "$TELEGRAM_TOKEN" ] || [ -n "$telegram_token" ]; then
   "channels": {
     "telegram": {
       "enabled": true,
-      "botToken": "$TBOT",
+      "botToken": "$TELEGRAM_TOKEN",
       "dmPolicy": "pairing"
     }
   }
