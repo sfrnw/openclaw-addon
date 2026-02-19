@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.4] - 2026-02-19
+
+### Fixed
+- Run container as root (not `node` user) to access `/data`
+- HA add-on containers are sandboxed by HA, root is safe here
+
 ## [3.0.3] - 2026-02-19
 
 ### Fixed

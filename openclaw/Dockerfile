@@ -21,7 +21,8 @@ WORKDIR /home/node
 COPY run.sh /run.sh
 RUN chmod +x /run.sh && chown node:node /run.sh
 
-USER node
+# Run as root (HA add-on container, security handled by HA)
+# USER node
 
 EXPOSE 18789
 
