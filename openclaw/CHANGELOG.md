@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.6] - 2026-02-19
+
+### Fixed
+- Install Home Assistant CLI (`ha`) in container
+- Bot can now execute HA commands without errors
+- Required for full OpenClaw functionality in HA environment
+
 ## [3.0.5] - 2026-02-19
 
 ### Fixed

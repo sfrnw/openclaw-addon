@@ -1,6 +1,6 @@
 {
   "name": "OpenClaw AI Assistant",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "slug": "openclaw",
   "description": "Official OpenClaw AI assistant based on docker-setup.sh",
   "arch": ["aarch64", "armv7"],

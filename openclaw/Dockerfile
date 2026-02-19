@@ -1,6 +1,6 @@
 FROM node:22-bookworm
 
-# Install dependencies (from official docker-setup.sh)
+# Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
@@ -12,16 +12,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install OpenClaw globally
 RUN npm install -g openclaw@latest
 
-# Create home directory structure
-RUN mkdir -p /home/node/.openclaw && chown -R node:node /home/node
+# Install HA CLI (for ha commands inside container)
+RUN curl -L https://github.com/home-assistant/cli/releases/latest/download/ha_aarch64 -o /usr/local/bin/ha \
+    && chmod +x /usr/local/bin/ha
 
-WORKDIR /home/node
+WORKDIR /data
 
 # Copy startup script
 COPY run.sh /run.sh
-RUN chmod +x /run.sh && chown node:node /run.sh
+RUN chmod +x /run.sh
 
-# Run as root (HA add-on container, security handled by HA)
+# Run as root (needed for /data access)
 # USER node
 
 EXPOSE 18789
