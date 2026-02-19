@@ -5,20 +5,21 @@ export PATH="/root/.npm-global/bin:$PATH"
 
 echo "🦞 Starting OpenClaw..."
 
-OPTIONS="/data/options.json"
+# HA passes config as env vars
+TELEGRAM_TOKEN="${TELEGRAM_TOKEN}"
+GATEWAY_TOKEN="${GATEWAY_TOKEN}"
 
-TELEGRAM_TOKEN=$(jq -r '.telegram_token' "$OPTIONS")
-GATEWAY_TOKEN=$(jq -r '.gateway_token' "$OPTIONS")
-
-if [ -z "$TELEGRAM_TOKEN" ] || [ "$TELEGRAM_TOKEN" = "null" ]; then
-    echo "ERROR: telegram_token required"
+if [ -z "$TELEGRAM_TOKEN" ]; then
+    echo "ERROR: telegram_token required in Configuration"
     exit 1
 fi
 
-if [ -z "$GATEWAY_TOKEN" ] || [ "$GATEWAY_TOKEN" = "null" ]; then
-    echo "ERROR: gateway_token required"
+if [ -z "$GATEWAY_TOKEN" ]; then
+    echo "ERROR: gateway_token required in Configuration"
     exit 1
 fi
+
+echo "✅ Tokens loaded"
 
 mkdir -p /root/.openclaw
 
@@ -43,7 +44,7 @@ cat > /root/.openclaw/openclaw.json << EOF
 }
 EOF
 
-echo "✅ Config loaded"
+echo "✅ Config written"
 echo "🌐 Web UI: http://$(hostname -i):18789"
 
 exec openclaw gateway start

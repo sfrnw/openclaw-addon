@@ -1,6 +1,6 @@
 {
   "name": "OpenClaw AI Assistant",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "slug": "openclaw",
   "description": "AI personal assistant with Telegram integration",
   "arch": ["aarch64", "armv7"],

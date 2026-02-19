@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.4] - 2026-02-19
+
+### Fixed
+- Read config from environment variables (standard HA add-on pattern)
+- Removed /data/options.json parsing (wrong location for addon-specific config)
+
 ## [2.0.3] - 2026-02-19
 
 ### Fixed
