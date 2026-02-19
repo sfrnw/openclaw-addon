@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+# Ensure npm global bin is in PATH
+export PATH="/root/.npm-global/bin:$PATH"
+
 echo "🦞 Starting OpenClaw..."
 
 # Read config from HA options.json
@@ -26,6 +29,10 @@ if [ -z "$GATEWAY_TOKEN" ] || [ "$GATEWAY_TOKEN" = "null" ]; then
     exit 1
 fi
 
+echo "✅ Tokens loaded:"
+echo "   Telegram: ${TELEGRAM_TOKEN:0:25}..."
+echo "   Gateway: ${GATEWAY_TOKEN:0:10}..."
+
 # Create config
 mkdir -p /root/.openclaw
 cat > /root/.openclaw/openclaw.json << EOF
@@ -49,8 +56,9 @@ cat > /root/.openclaw/openclaw.json << EOF
 }
 EOF
 
-echo "✅ Config loaded"
+echo "✅ Config written"
 echo "🌐 Web UI: http://$(hostname -i):18789"
+echo "🚀 Starting gateway..."
 
-# Start
+# Start OpenClaw
 exec openclaw gateway start

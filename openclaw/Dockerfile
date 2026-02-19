@@ -3,8 +3,14 @@ FROM node:20-alpine
 # Install dependencies
 RUN apk add --no-cache git curl gnupg pass jq
 
-# Install OpenClaw
-RUN npm install -g openclaw
+# Install OpenClaw globally
+RUN npm install -g openclaw && \
+    # Verify installation
+    which openclaw && \
+    openclaw --version
+
+# Add npm global bin to PATH
+ENV PATH="/root/.npm-global/bin:$PATH"
 
 # Copy startup script
 COPY run.sh /run.sh

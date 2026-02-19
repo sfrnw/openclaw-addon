@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2] - 2026-02-19
+
+### Fixed
+- Added npm global bin to PATH (`/root/.npm-global/bin`)
+- Added verification of openclaw installation in Dockerfile
+- Added token preview in logs for debugging
+
 ## [2.0.1] - 2026-02-19
 
 ### Fixed
