@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🦞 Starting OpenClaw (v3.0.5 - Official Docker Flow)..."
+echo "🦞 Starting OpenClaw (v3.0.6 - Official Docker Flow)..."
 
 CONFIG_DIR="/data"
 CONFIG_FILE="$CONFIG_DIR/openclaw.json"
