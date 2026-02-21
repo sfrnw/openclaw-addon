@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🦞 Starting OpenClaw (v3.0.6 - Home Assistant Add-on)..."
+echo "🦞 Starting OpenClaw (v3.0.7 - Home Assistant Add-on)..."
 
 CONFIG_DIR="/data"
 CONFIG_FILE="$CONFIG_DIR/openclaw.json"
@@ -10,11 +10,14 @@ OPTIONS_FILE="/data/options.json"
 # Create config directory
 mkdir -p "$CONFIG_DIR"
 mkdir -p "$CONFIG_DIR/credentials"
+mkdir -p "$CONFIG_DIR/workspace/memory"
 
 # Read options from HA
 TELEGRAM_TOKEN=""
+OLLAMA_URL=""
 if [ -f "$OPTIONS_FILE" ]; then
     TELEGRAM_TOKEN=$(jq -r '.telegram_token // empty' "$OPTIONS_FILE" 2>/dev/null || echo "")
+    OLLAMA_URL=$(jq -r '.ollama_url // empty' "$OPTIONS_FILE" 2>/dev/null || echo "")
 fi
 
 # Generate gateway token (store in config for persistence)
@@ -28,14 +31,52 @@ fi
 
 # Check if config exists
 if [ ! -f "$CONFIG_FILE" ]; then
-    echo "📝 No config found, generating config with Qwen (free model)..."
+    echo "📝 No config found, generating config..."
     
-    cat > "$CONFIG_FILE" << EOF
+    # Determine model to use
+    if [ -n "$OLLAMA_URL" ] && [ "$OLLAMA_URL" != "null" ]; then
+        echo "🤖 Ollama URL detected, configuring local model..."
+        MODEL_CONFIG=$(cat << EOF
 {
-  "meta": {
-    "deployment": "home-assistant-addon",
-    "version": "3.0.6"
+  "models": {
+    "providers": {
+      "ollama": {
+        "baseUrl": "$OLLAMA_URL",
+        "apiKey": "ollama",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "phi3:mini",
+            "name": "Phi 3 Mini",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0 },
+            "contextWindow": 128000,
+            "maxTokens": 4096
+          }
+        ]
+      }
+    }
   },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "ollama/phi3:mini",
+        "fallbacks": []
+      },
+      "models": {
+        "ollama/phi3:mini": { "alias": "ollama" }
+      }
+    }
+  }
+}
+EOF
+)
+        echo "✅ Configured Ollama local model"
+    else
+        echo "⚠️ No Ollama URL, using Qwen Portal (requires browser auth)..."
+        MODEL_CONFIG=$(cat << EOF
+{
   "models": {
     "providers": {
       "qwen-portal": {
@@ -64,11 +105,22 @@ if [ ! -f "$CONFIG_FILE" ]; then
       },
       "models": {
         "qwen-portal/coder-model": { "alias": "qwen" }
-      },
-      "workspace": "/data/workspace",
-      "heartbeat": { "every": "1h" }
+      }
     }
+  }
+}
+EOF
+)
+        echo "✅ Configured Qwen Portal (OAuth required)"
+    fi
+    
+    cat > "$CONFIG_FILE" << EOF
+{
+  "meta": {
+    "deployment": "home-assistant-addon",
+    "version": "3.0.7"
   },
+  $MODEL_CONFIG
   "gateway": {
     "port": 18789,
     "mode": "local",
@@ -88,14 +140,13 @@ if [ ! -f "$CONFIG_FILE" ]; then
   },
   "plugins": {
     "entries": {
-      "telegram": { "enabled": true },
-      "qwen-portal-auth": { "enabled": true }
+      "telegram": { "enabled": true }
     }
   }
 }
 EOF
     
-    echo "✅ Config generated with Qwen (free model)"
+    echo "✅ Config generated"
 fi
 
 # Update Telegram config if token provided

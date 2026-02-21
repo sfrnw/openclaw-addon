@@ -1,8 +1,8 @@
 {
   "name": "OpenClaw AI Assistant",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "slug": "openclaw",
-  "description": "OpenClaw AI Assistant with free Qwen model (no API key required)",
+  "description": "OpenClaw AI with Ollama (local) or Qwen (free cloud)",
   "arch": ["aarch64", "armv7"],
   "url": "https://github.com/sfrnw/openclaw-addon",
   "startup": "application",
@@ -12,10 +12,12 @@
   },
   "homeassistant": "2023.1.0",
   "options": {
-    "telegram_token": ""
+    "telegram_token": "",
+    "ollama_url": ""
   },
   "schema": {
-    "telegram_token": "str?"
+    "telegram_token": "str?",
+    "ollama_url": "str?"
   },
   "init": false,
   "map": ["data"],
