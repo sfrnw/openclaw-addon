@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🦞 Starting OpenClaw (v3.0.6 - Official Docker Flow)..."
+echo "🦞 Starting OpenClaw (v3.0.6 - Home Assistant Add-on)..."
 
 CONFIG_DIR="/data"
 CONFIG_FILE="$CONFIG_DIR/openclaw.json"
@@ -9,49 +9,70 @@ OPTIONS_FILE="/data/options.json"
 
 # Create config directory
 mkdir -p "$CONFIG_DIR"
+mkdir -p "$CONFIG_DIR/credentials"
 
-# Read Telegram token from HA options.json
+# Read options from HA
 TELEGRAM_TOKEN=""
 if [ -f "$OPTIONS_FILE" ]; then
     TELEGRAM_TOKEN=$(jq -r '.telegram_token // empty' "$OPTIONS_FILE" 2>/dev/null || echo "")
 fi
 
-# Check if config exists
-if [ ! -f "$CONFIG_FILE" ]; then
-    echo "📝 No config found, generating minimal config..."
-    
-    # Generate gateway token
-    GATEWAY_TOKEN="$(openssl rand -hex 32)"
-    
-    cat > "$CONFIG_FILE" << EOF
-{
-  "gateway": {
-    "port": 18789,
-    "mode": "local",
-    "bind": "lan",
-    "auth": {
-      "mode": "token",
-      "token": "$GATEWAY_TOKEN"
-    }
-  }
-}
-EOF
-    echo "✅ Config generated at $CONFIG_FILE"
-    echo "🔑 Gateway Token: $GATEWAY_TOKEN"
+# Generate gateway token (store in config for persistence)
+GATEWAY_TOKEN_FILE="$CONFIG_DIR/gateway_token.txt"
+if [ -f "$GATEWAY_TOKEN_FILE" ]; then
+    GATEWAY_TOKEN=$(cat "$GATEWAY_TOKEN_FILE")
 else
-    echo "✅ Config found at $CONFIG_FILE"
+    GATEWAY_TOKEN="$(openssl rand -hex 32)"
+    echo "$GATEWAY_TOKEN" > "$GATEWAY_TOKEN_FILE"
 fi
 
-# Configure Telegram if token provided
-if [ -n "$TELEGRAM_TOKEN" ] && [ "$TELEGRAM_TOKEN" != "null" ]; then
-    echo "📱 Configuring Telegram..."
-    # Update config file with telegram token
+# Check if config exists
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "📝 No config found, generating config with Qwen (free model)..."
+    
     cat > "$CONFIG_FILE" << EOF
 {
+  "meta": {
+    "deployment": "home-assistant-addon",
+    "version": "3.0.6"
+  },
+  "models": {
+    "providers": {
+      "qwen-portal": {
+        "baseUrl": "https://portal.qwen.ai/v1",
+        "apiKey": "qwen-oauth",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "coder-model",
+            "name": "Qwen Coder",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0 },
+            "contextWindow": 128000,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "qwen-portal/coder-model",
+        "fallbacks": []
+      },
+      "models": {
+        "qwen-portal/coder-model": { "alias": "qwen" }
+      },
+      "workspace": "/data/workspace",
+      "heartbeat": { "every": "1h" }
+    }
+  },
   "gateway": {
     "port": 18789,
     "mode": "local",
-    "bind": "lan",
+    "bind": "0.0.0.0",
     "auth": {
       "mode": "token",
       "token": "$GATEWAY_TOKEN"
@@ -59,22 +80,57 @@ if [ -n "$TELEGRAM_TOKEN" ] && [ "$TELEGRAM_TOKEN" != "null" ]; then
   },
   "channels": {
     "telegram": {
-      "enabled": true,
-      "botToken": "$TELEGRAM_TOKEN",
-      "dmPolicy": "pairing"
+      "enabled": PLACEHOLDER_ENABLED,
+      "botToken": "PLACEHOLDER_TOKEN",
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": { "enabled": true },
+      "qwen-portal-auth": { "enabled": true }
     }
   }
 }
 EOF
-    echo "✅ Telegram configured"
-else
-    echo "⚠️ No Telegram token found (set telegram_token in HA config)"
+    
+    echo "✅ Config generated with Qwen (free model)"
 fi
 
+# Update Telegram config if token provided
+if [ -n "$TELEGRAM_TOKEN" ] && [ "$TELEGRAM_TOKEN" != "null" ] && [ "$TELEGRAM_TOKEN" != "" ]; then
+    echo "📱 Updating Telegram configuration..."
+    
+    # Use jq to update config safely
+    if command -v jq &> /dev/null; then
+        # Create temp file with updated config
+        jq --arg token "$TELEGRAM_TOKEN" '
+            .channels.telegram.enabled = true |
+            .channels.telegram.botToken = $token
+        ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+        echo "✅ Telegram configured"
+    else
+        echo "⚠️ jq not found, skipping Telegram update"
+    fi
+else
+    echo "⚠️ No Telegram token (set telegram_token in Add-on Configuration)"
+fi
+
+# Setup Telegram allowlist (allow all by default for first setup)
+echo '{"version": 1, "allowFrom": []}' > "$CONFIG_DIR/credentials/telegram-allowFrom.json"
+
+# Create workspace directory
+mkdir -p "$CONFIG_DIR/workspace/memory"
+
 echo ""
+echo "🦞 OpenClaw is ready!"
+echo "🔑 Gateway Token: $GATEWAY_TOKEN"
 echo "🌐 Web UI: http://$(hostname -i):18789"
-echo "🚀 Starting Gateway..."
+echo "📡 Port: 18789"
+echo ""
+echo "⚠️ IMPORTANT: Copy the Gateway Token and use it in Web UI to configure channels!"
 echo ""
 
 # Start gateway
-exec openclaw gateway --port 18789 --allow-unconfigured
+exec openclaw gateway --port 18789 --bind 0.0.0.0

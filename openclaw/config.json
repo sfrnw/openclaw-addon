@@ -2,7 +2,7 @@
   "name": "OpenClaw AI Assistant",
   "version": "3.0.6",
   "slug": "openclaw",
-  "description": "Official OpenClaw AI assistant based on docker-setup.sh",
+  "description": "OpenClaw AI Assistant with free Qwen model (no API key required)",
   "arch": ["aarch64", "armv7"],
   "url": "https://github.com/sfrnw/openclaw-addon",
   "startup": "application",
@@ -18,7 +18,8 @@
     "telegram_token": "str?"
   },
   "init": false,
-  "map": ["config:ro", "data"],
+  "map": ["data"],
   "homeassistant_api": true,
-  "hassio_api": true
+  "hassio_api": true,
+  "stage": "stable"
 }
