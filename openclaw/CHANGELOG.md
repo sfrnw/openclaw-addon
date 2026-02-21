@@ -1,6 +1,40 @@
 # Changelog
 
-## [3.0.6] - 2026-02-19
+## [3.1.0] - 2026-02-21
+
+### 🎉 MAJOR: Local AI with Ollama (No API Keys!)
+
+**Added:**
+- Ollama server integrated into add-on (runs locally)
+- Pre-configured with `phi3:mini` (3.8B) model — best quality/speed balance
+- Alternative models supported: `qwen2.5-coder:1.5b`, `qwen2.5-coder:3b`, `llama3.2:3b`
+- No API keys required — completely free and private
+
+**Changed:**
+- Startup script now:
+  1. Starts Ollama server in background
+  2. Waits for Ollama to be ready
+  3. Pulls model if not exists (~2GB, 5-10 min first time)
+  4. Generates OpenClaw config with Ollama provider
+  5. Starts OpenClaw gateway
+
+**Config:**
+- New option: `model` (default: `phi3:mini`)
+- Ollama runs on port 11434 (exposed)
+- OpenClaw connects to `http://localhost:11434/v1`
+
+**Resource Usage:**
+- Ollama server: ~200MB RAM
+- phi3:mini model: ~2.5GB RAM
+- OpenClaw: ~400MB RAM
+- **Total: ~3.1GB** (works on Pi 5 with 8GB)
+
+**Fixed:**
+- No more OAuth issues with Qwen Portal
+- No API key required
+- Works completely offline after initial model download
+
+### [3.0.6] - 2026-02-19
 
 ### Fixed
 - Install Home Assistant CLI (`ha`) in container

@@ -1,27 +1,28 @@
 {
   "name": "OpenClaw AI Assistant",
-  "version": "3.0.7",
+  "version": "3.1.0",
   "slug": "openclaw",
-  "description": "OpenClaw AI with Ollama (local) or Qwen (free cloud)",
+  "description": "OpenClaw AI with local Ollama (phi3:mini) - no API keys needed",
   "arch": ["aarch64", "armv7"],
   "url": "https://github.com/sfrnw/openclaw-addon",
-  "startup": "application",
+  "startup": "services",
   "boot": "auto",
   "ports": {
-    "18789/tcp": 18789
+    "18789/tcp": 18789,
+    "11434/tcp": 11434
   },
   "homeassistant": "2023.1.0",
   "options": {
     "telegram_token": "",
-    "ollama_url": ""
+    "model": "phi3:mini"
   },
   "schema": {
     "telegram_token": "str?",
-    "ollama_url": "str?"
+    "model": "str?"
   },
   "init": false,
   "map": ["data"],
   "homeassistant_api": true,
   "hassio_api": true,
-  "stage": "stable"
+  "stage": "experimental"
 }

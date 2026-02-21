@@ -1,85 +1,215 @@
-# 🦞 OpenClaw AI Assistant - Home Assistant Add-on (v3.0.0)
+# 🦞 OpenClaw AI Assistant — Полностью готовая версия
 
-Based on official OpenClaw Docker setup (`docker-setup.sh`).
+**v3.1.0 с Ollama + phi3:mini — без API ключей, полностью локально**
 
-## ⚡ Quick Setup
+---
 
-### 1. Install
+## 🚀 БЫСТРЫЙ СТАРТ (10 минут)
 
-1. **Supervisor** → **Add-on Store**
-2. Find **OpenClaw AI Assistant**
-3. **Install**
+### Шаг 1: Обнови репозиторий в Home Assistant
 
-### 2. Configure (Optional)
+1. Открой Home Assistant
+2. **Настройки** → **Дополнения** → **Магазин**
+3. Нажми **⋮** (три точки)
+4. **Репозитории** → найди `https://github.com/sfrnw/openclaw-addon`
+5. Если уже есть — нажми **⋮** → **Обновить**
 
-**Configuration** tab:
-- `telegram_token`: Your Telegram bot token (optional, can configure later via CLI)
+### Шаг 2: Установи/Обнови аддон
 
-### 3. Start
-
-1. **Info** tab → **Start**
-2. Wait ~60 seconds (first startup downloads OpenClaw)
-
-### 4. Access Web UI
-
-- Click **Open Web UI**
-- Or: `http://homeassistant.local:18789`
-- Copy the gateway token from logs
-
-### 5. Configure Channels
-
-**Via Web UI:**
-1. Open Web UI
-2. Paste gateway token (from logs)
-3. Go to **Channels** → Add Telegram/WhatsApp/etc.
-
-**Via CLI (in web terminal):**
 ```bash
-# Telegram
-ha addons exec f5eab416_openclaw --command "openclaw channels add --channel telegram --token YOUR_TOKEN"
+# Через SSH к Home Assistant:
+ssh root@homeassistant.local
 
-# Check status
-ha addons exec f5eab416_openclaw --command "openclaw channels list"
+# Перезагрузи репозиторий
+ha addons reload
+
+# Обнови или установи
+ha addons update openclaw
+# или если не установлен:
+# ha addons install openclaw
 ```
 
+### Шаг 3: Настрой Telegram
+
+**В Home Assistant UI:**
+1. **Настройки** → **Дополнения** → **OpenClaw**
+2. Вкладка **Конфигурация**
+3. Заполни:
+   ```
+   telegram_token: 123456789:ABCdefGHIjklMNOpqrsTUVwxyz
+   model: phi3:mini
+   ```
+4. **Сохранить**
+
+> **Где взять токен:** В Telegram найди @BotFather, напиши `/newbot`
+
+### Шаг 4: Запусти
+
+**В Home Assistant UI:**
+1. Вкладка **Информация**
+2. **Запустить**
+3. **Подожди 5-10 минут** (первый запуск — скачивается модель ~2GB)
+
+### Шаг 5: Проверь логи
+
+**Вкладка "Журнал"** — должно быть:
+```
+🦞 Starting OpenClaw v3.1.0 with Ollama (phi3:mini)...
+🚀 Starting Ollama server...
+✅ Ollama is ready!
+📥 Checking model: phi3:mini...
+⬇️  Pulling model phi3:mini (this may take 5-10 minutes)...
+✅ Model pulled!
+📝 Generating OpenClaw config...
+✅ OpenClaw config generated
+📱 Configuring Telegram...
+✅ Telegram configured
+🦞 OpenClaw is ready!
+🔑 Gateway Token: abc123...
+```
+
+**Скопируй Gateway Token!**
+
+### Шаг 6: Открой Web UI
+
+1. Вкладка **Информация** → **Открыть веб-интерес**
+2. Вставь Gateway Token
+3. **Connect**
+
+### Шаг 7: Настрой Telegram allowlist
+
+1. В Web UI: **Credentials** → **Telegram**
+2. Добавь свой Telegram ID
+3. **Как узнать ID:** в Telegram напиши @userinfobot
+
+### Шаг 8: Тест!
+
+В Telegram:
+1. Найди своего бота
+2. Напиши `/start`
+3. Напиши `привет как дела`
+
+**Должен ответить!** ✅
+
 ---
 
-## 🔐 Getting Telegram Token
+## 📊 Что внутри
 
-1. Message @BotFather in Telegram
-2. `/newbot` → follow prompts
-3. Copy token: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`
+| Компонент | Версия | RAM |
+|-----------|--------|-----|
+| Ollama | latest | ~200MB |
+| phi3:mini | 3.8B | ~2.5GB |
+| OpenClaw | latest | ~400MB |
+| **Итого** | | **~3.1GB** |
 
----
-
-## 📁 Data Storage
-
-- Config: `/home/node/.openclaw/` (persisted in add-on data)
-- Workspace: Not mounted (stateless, config is source of truth)
+**На Pi 5 с 8GB остаётся ~5GB для Home Assistant** ✅
 
 ---
 
-## 🛠 Management
+## 🐛 Troubleshooting
+
+### Аддон не запускается
 
 ```bash
-# View logs
+# Через SSH
+ha addons logs openclaw
+```
+
+### Модель скачивается слишком долго
+
+**Нормально!** phi3:mini ~2GB, на домашнем интернете 5-15 минут.
+
+Проверь прогресс:
+```bash
+ha addons logs openclaw | grep "Pulling"
+```
+
+### Telegram не отвечает
+
+1. Проверь токен в конфигурации
+2. Проверь allowlist (добавь свой ID)
+3. Перезапусти аддон
+
+### "Model not found"
+
+Перезапусти аддон — модель скачается заново:
+```bash
+ha addons restart openclaw
+```
+
+### Home Assistant тормозит
+
+Проверь память:
+```bash
+ssh root@homeassistant.local
+free -h
+```
+
+Если мало памяти — останови лишние аддоны.
+
+---
+
+## ⚙️ Управление через SSH
+
+```bash
+# Логи
 ha addons logs openclaw
 
-# Restart
+# Перезапуск
 ha addons restart openclaw
 
-# Execute commands
-ha addons exec openclaw --command "openclaw --help"
+# Стоп
+ha addons stop openclaw
+
+# Старт
+ha addons start openclaw
+
+# Статус
+ha addons info openclaw
 ```
 
 ---
 
-## 📚 Resources
+## 🔄 Обновление
 
-- [Official Docker Docs](https://docs.openclaw.ai/install/docker)
-- [OpenClaw Documentation](https://docs.openclaw.ai)
-- [Channel Setup](https://docs.openclaw.ai/channels)
+```bash
+ha addons reload
+ha addons update openclaw
+ha addons restart openclaw
+```
 
 ---
 
-**Built from official OpenClaw Docker flow** 🦞
+## 📁 Данные
+
+```
+/addon_configs/openclaw/data/
+├── openclaw.json          # Конфиг
+├── gateway_token.txt      # Токен Web UI
+├── credentials/           # Токены каналов
+└── workspace/memory/      # Память
+```
+
+**Бэкап:**
+```bash
+tar -czf openclaw-backup.tar.gz /addon_configs/openclaw/data/
+```
+
+---
+
+## 🎯 Другие модели
+
+В конфигурации аддона измени `model`:
+
+| Модель | RAM | Качество |
+|--------|-----|----------|
+| `phi3:mini` (3.8B) | ~2.5GB | 🟢🟢 Хорошо |
+| `qwen2.5-coder:3b` | ~2GB | 🟢 Нормально |
+| `qwen2.5-coder:1.5b` | ~1GB | 🟡 Базово |
+| `llama3.2:3b` | ~2GB | 🟢 Нормально |
+
+---
+
+**Готово!** 🦞
+
+Вопросы — скидывай логи: `ha addons logs openclaw`
