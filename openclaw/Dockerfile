@@ -1,20 +1,7 @@
-FROM node:22-bookworm
+FROM ollama/ollama:latest
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    curl \
-    gnupg \
-    jq \
-    ca-certificates \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Ollama (direct binary download for ARM64)
-RUN curl -fsSL https://ollama.com/download/Ollama-linux-arm64.tgz -o /tmp/ollama.tgz \
-    && tar -C /usr -xzf /tmp/ollama.tgz \
-    && rm /tmp/ollama.tgz \
-    && ln -s /usr/bin/ollama /usr/local/bin/ollama
+# Install Node.js
+RUN apk add --no-cache nodejs npm git curl jq
 
 # Install OpenClaw globally
 RUN npm install -g openclaw@latest

@@ -1,9 +1,9 @@
 {
   "name": "OpenClaw AI Assistant",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "slug": "openclaw",
   "description": "OpenClaw AI with local Ollama (phi3:mini) - no API keys needed",
-  "arch": ["aarch64", "armv7"],
+  "arch": ["aarch64"],
   "url": "https://github.com/sfrnw/openclaw-addon",
   "startup": "services",
   "boot": "auto",

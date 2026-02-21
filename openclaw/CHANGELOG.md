@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1] - 2026-02-21
+
+### Fixed
+- Dockerfile: Use official `ollama/ollama:latest` as base image (ARM64 only)
+- Fixed build errors with Ollama installation
+- Simplified build process
+
 ## [3.1.0] - 2026-02-21
 
 ### 🎉 MAJOR: Local AI with Ollama (No API Keys!)
