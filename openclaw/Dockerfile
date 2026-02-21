@@ -1,7 +1,13 @@
 FROM ollama/ollama:latest
 
-# Install Node.js
-RUN apk add --no-cache nodejs npm git curl jq
+# Install Node.js (ollama/ollama is Debian-based)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nodejs \
+    npm \
+    git \
+    curl \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install OpenClaw globally
 RUN npm install -g openclaw@latest
